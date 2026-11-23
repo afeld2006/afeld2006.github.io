@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arthur Feld</title>
+<meta name="description" content="Arthur Feld, Data Science student at CentraleSupélec and McGill. Machine learning for physical systems: aircraft noise, earthquake simulation, battery modelling.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..48,500;12..48,600;12..48,700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+/* Layout: one narrow column, masthead + hero with portrait ring, hairline-ruled bands; CV view swaps in on #cv. */
+:root {
+  color-scheme: light;
+  --bg:            #FFFFFF;
+  --surface:       #F4F6FA;
+  --ink:           #0F1622;
+  --graphite:      #566173;
+  --rule:          #E2E7EF;
+
+  --signal:        #1C4FA0;
+  --signal-bright: #2F6FD6;
+  --signal-ink:    #12346B;
+  --signal-soft:   #E5EDFA;
+  --marker:        #E2683C;
+
+  --measure: 36rem;
+  --gutter: clamp(1.25rem, 5vw, 4.5rem);
+  --radius: 12px;
+  --radius-sm: 9px;
+
+  --f-display: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-body: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: clamp(1.03rem, 1rem + 0.18vw, 1.14rem);
+  line-height: 1.66;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--signal) 0%, var(--signal-bright) 55%, var(--marker) 100%);
+  z-index: 50;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 2px; }
+::selection { background: var(--signal-soft); }
+
+[hidden] { display: none !important; }
+
+/* ---------- layout ---------- */
+.wrap { max-width: 62rem; margin: 0 auto; padding-inline: var(--gutter); }
+.band { padding-block: clamp(3rem, 7vw, 5.5rem); }
+.band--tight { padding-block: clamp(2rem, 4vw, 3rem); }
+.rule-top { border-top: 1px solid var(--rule); }
+
+/* ---------- type ---------- */
+h1, h2, h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.06;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 0 0 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.eyebrow::before { content: ""; width: 1.4rem; height: 2px; background: var(--signal-bright); }
+
+p { max-width: var(--measure); }
+.lede { max-width: var(--measure); font-size: 1.16em; line-height: 1.55; }
+
+/* ---------- masthead ---------- */
+.masthead {
+  padding-block: 1.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.6rem;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--f-mono);
+  font-size: 0.76rem;
+}
+.masthead a { color: var(--graphite); text-decoration: none; transition: color 160ms var(--ease); }
+.masthead a:hover, .masthead a[aria-current="page"] { color: var(--signal); }
+.masthead .home { color: var(--ink); letter-spacing: 0.01em; font-weight: 500; }
+.masthead nav { display: flex; gap: 1.4rem; }
+
+/* ---------- hero ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(11rem, 20vw, 15rem);
+  gap: clamp(1.6rem, 4vw, 3.5rem);
+  align-items: center;
+  padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 3vw, 2.5rem);
+}
+.hero h1 {
+  font-size: clamp(2rem, 1.2rem + 2.8vw, 3.25rem);
+  font-weight: 700;
+  max-width: 15ch;
+  margin-bottom: 1.5rem;
+}
+.hero .lead { max-width: var(--measure); font-size: 1.12em; line-height: 1.55; margin: 0; }
+.hero .lead strong { font-weight: 600; color: var(--signal-ink); }
+
+.hero-photo { margin: 0; }
+.photo-ring {
+  width: 100%;
+  max-width: 15rem;
+  margin-inline: auto;
+  aspect-ratio: 1;
+  padding: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--signal-ink), var(--signal), var(--signal-bright), var(--signal), var(--signal-ink));
+  background-size: 250% 250%;
+}
+.photo-ring img,
+.photo-ring .monogram {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 300ms var(--ease);
+}
+.photo-ring .monogram {
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 2rem + 2.5vw, 3.8rem);
+  letter-spacing: -0.04em;
+  color: var(--signal);
+}
+.photo-ring:hover img, .photo-ring:hover .monogram { transform: translateY(-3px); }
+
+@media (max-width: 44rem) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-photo { order: -1; justify-self: start; }
+  .photo-ring { max-width: 9rem; margin-inline: 0; }
+}
+
+.hero-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 1.6rem; margin-top: 2.2rem; }
+.pill {
+  font-family: var(--f-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0.2rem 0;
+  background-image: linear-gradient(var(--signal), var(--signal));
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 240ms var(--ease), color 160ms var(--ease);
+}
+.pill::after { content: "  \2192"; color: var(--signal); }
+.pill.down::after { content: "  \2193"; }
+.pill:hover { color: var(--signal); background-size: 100% 1.5px; }
+
+/* ---------- signature: a ground-motion trace ---------- */
+.scope { padding-bottom: clamp(2.5rem, 5vw, 4rem); }
+.scope figure { margin: 0; }
+.scope svg { width: 100%; height: auto; overflow: visible; display: block; }
+.scope .baseline { stroke: var(--rule); stroke-width: 1; }
+.scope .tick { stroke: var(--rule); stroke-width: 1; }
+.scope .tick-label { font-family: var(--f-mono); font-size: 11px; fill: var(--graphite); }
+.trace { fill: none; stroke: var(--signal); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+.phase-label { font-family: var(--f-mono); font-size: 12.5px; fill: var(--graphite); text-anchor: middle; letter-spacing: 0.02em; transition: fill 160ms ease; }
+.phase-dot { fill: var(--signal); transition: r 160ms ease; }
+.phase-dot.is-s { fill: var(--marker); }
+.phase-drop { stroke: var(--graphite); stroke-opacity: 0.35; stroke-width: 1; stroke-dasharray: 3 4; }
+.phase { cursor: default; }
+.phase:hover .phase-dot { r: 6.5; }
+.phase:hover .phase-label { fill: var(--ink); }
+.scope figcaption {
+  margin-top: 0.9rem;
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  color: var(--graphite);
+  max-width: 52ch;
+  line-height: 1.55;
+}
+@media (max-width: 40rem) { .scope { display: none; } }
+
+/* ---------- project list ---------- */
+.projects { display: grid; gap: 1px; background: var(--rule); border-block: 1px solid var(--rule); }
+.project {
+  position: relative;
+  background: var(--bg);
+  padding: clamp(1.6rem, 3vw, 2.4rem) 0;
+  display: grid;
+  gap: 0.7rem;
+  text-decoration: none;
+  transition: padding-left 260ms var(--ease);
+}
+.project::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--signal);
+  transform: scaleY(0);
+  transition: transform 300ms var(--ease);
+}
+.project:hover, .project:focus-visible { padding-left: 1.15rem; }
+.project:hover::before, .project:focus-visible::before { transform: scaleY(1); }
+.project h3 {
+  font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
+  justify-self: start;
+  background-image: linear-gradient(var(--signal), var(--signal));
+  background-size: 0% 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 280ms var(--ease);
+}
+.project h3::after {
+  content: "  \2192";
+  display: inline-block;
+  color: var(--signal);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 240ms var(--ease), transform 240ms var(--ease);
+}
+.project:hover h3, .project:focus-visible h3 { background-size: 100% 2px; }
+.project:hover h3::after, .project:focus-visible h3::after { opacity: 1; transform: translateX(2px); }
+.project p { margin: 0; color: var(--graphite); max-width: 46rem; }
+.project .meta {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--graphite);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+}
+.project .meta .figure {
+  color: var(--marker);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-variant-numeric: tabular-nums;
+}
+.project .meta .figure::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--marker); }
+
+/* ---------- contact ---------- */
+#contact h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.2rem); max-width: 22ch; }
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 2rem;
+  font-family: var(--f-mono);
+  font-size: 0.84rem;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.contact-links a {
+  text-decoration: none;
+  padding-bottom: 3px;
+  background-image: linear-gradient(var(--signal), var(--signal));
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 220ms var(--ease), color 160ms var(--ease);
+}
+.contact-links a:hover { color: var(--signal); background-size: 100% 1.5px; }
+.contact-note { font-family: var(--f-mono); font-size: 0.75rem; color: var(--graphite); margin-top: 1.2rem; }
+
+footer {
+  padding-block: 2.5rem 3.5rem;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  color: var(--graphite);
+}
+
+/* ---------- CV view ---------- */
+.project-head h1 { font-size: clamp(2rem, 1.3rem + 3vw, 3.3rem); font-weight: 700; max-width: 18ch; margin-bottom: 1.3rem; }
+
+.factsheet {
+  margin: 2.4rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1.4rem 2rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.4rem;
+  font-family: var(--f-mono);
+  font-size: 0.78rem;
+}
+.factsheet dt { color: var(--signal); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.35rem; }
+.factsheet dd { margin: 0; line-height: 1.5; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 2.2rem; padding: 0; list-style: none; }
+.btn {
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-size: 0.78rem;
+  text-decoration: none;
+  padding: 0.65rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink);
+  transition: border-color 180ms var(--ease), color 180ms var(--ease), background 180ms var(--ease), transform 180ms var(--ease);
+}
+.btn:hover { border-color: var(--signal); color: var(--signal); background: var(--signal-soft); transform: translateY(-2px); }
+.btn--primary { background: var(--signal); border-color: var(--signal); color: #fff; }
+.btn--primary:hover { background: var(--signal-ink); border-color: var(--signal-ink); color: #fff; }
+
+.cv-section { padding-top: clamp(2.2rem, 4vw, 3.2rem); margin-top: clamp(1.4rem, 3vw, 2rem); border-top: 1px solid var(--rule); }
+.cv-section > h2 {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin-bottom: 2rem;
+}
+.cv-entry {
+  display: grid;
+  grid-template-columns: 9.5rem minmax(0, 1fr);
+  gap: 0.4rem 2rem;
+  padding-bottom: 2.2rem;
+  scroll-margin-top: 1.5rem;
+}
+.cv-entry:last-child { padding-bottom: 0; }
+.cv-entry .when { font-family: var(--f-mono); font-size: 0.75rem; color: var(--graphite); padding-top: 0.45rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.cv-entry .what h3 { font-size: 1.2rem; margin-bottom: 0.45rem; }
+.cv-entry .what h3 span {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--graphite);
+  letter-spacing: 0.02em;
+  margin-left: 0.6rem;
+  white-space: nowrap;
+}
+.cv-entry .role { font-family: var(--f-mono); font-size: 0.78rem; color: var(--signal-ink); margin: 0 0 0.7rem; }
+.cv-entry p { margin: 0 0 0.7rem; max-width: 42rem; }
+.cv-entry p:last-child { margin-bottom: 0; }
+.cv-entry .detail { font-family: var(--f-mono); font-size: 0.75rem; color: var(--graphite); line-height: 1.6; }
+.cv-entry .detail a { color: var(--signal); text-decoration: none; border-bottom: 1px solid var(--rule); transition: border-color 160ms var(--ease); }
+.cv-entry .detail a:hover { border-color: var(--signal); }
+.cv-entry:target .what h3 { color: var(--signal); }
+
+@media (max-width: 34rem) {
+  .cv-entry { grid-template-columns: 1fr; gap: 0.3rem; }
+  .cv-entry .when { padding-top: 0; }
+  .cv-entry .what h3 span { display: block; margin-left: 0; margin-top: 0.2rem; }
+}
+
+.next { max-width: none; margin-top: clamp(3rem, 6vw, 4.5rem); padding-top: 1.6rem; border-top: 1px solid var(--rule); font-family: var(--f-mono); font-size: 0.8rem; }
+.next a { text-decoration: none; transition: color 160ms var(--ease); }
+.next a:hover { color: var(--signal); }
+
+/* ---------- motion ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .photo-ring { animation: gradientMove 6s ease infinite; }
+  .hero-text > *, .project-head > * { animation: rise 0.7s var(--ease) backwards; }
+  .hero-text > *:nth-child(1), .project-head > *:nth-child(1) { animation-delay: 0.05s; }
+  .hero-text > *:nth-child(2), .project-head > *:nth-child(2) { animation-delay: 0.13s; }
+  .hero-text > *:nth-child(3), .project-head > *:nth-child(3) { animation-delay: 0.21s; }
+  .hero-text > *:nth-child(4), .project-head > *:nth-child(4) { animation-delay: 0.29s; }
+  .hero-photo { animation: rise 0.8s var(--ease) 0.18s backwards; }
+
+  .trace { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.2s var(--ease) 0.3s forwards; }
+  .phase > * { animation: fade 0.5s ease backwards; }
+  .phase:nth-of-type(1) > * { animation-delay: 0.9s; }
+  .phase:nth-of-type(2) > * { animation-delay: 1.3s; }
+  .phase:nth-of-type(3) > * { animation-delay: 1.8s; }
+}
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+</style>
+</head>
+<body>
+
+<header class="wrap masthead">
+  <a class="home" href="#home">Arthur Feld</a>
+  <nav aria-label="Main">
+    <a href="#projects" data-nav="home">Projects</a>
+    <a href="#cv" data-nav="cv">CV</a>
+    <a href="#contact" data-nav="home">Contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===================== HOME ===================== -->
+  <div id="view-home">
+
+    <section class="wrap hero" id="home">
+      <div class="hero-text">
+        <p class="eyebrow">Data Science · Machine Learning</p>
+        <h1>Arthur Feld</h1>
+        <p class="lead">
+          Third-year Global Engineering student at
+          <strong>CentraleSupélec</strong> &amp; <strong>McGill University</strong>,
+          majoring in Data Science. Most of my work applies machine learning to physical
+          systems, from aircraft noise at HKUST to earthquake simulation at Paris-Saclay.
+        </p>
+        <div class="hero-buttons">
+          <a class="pill down" href="#projects">Projects</a>
+          <a class="pill" href="#cv">CV</a>
+        </div>
+      </div>
+
+      <div class="hero-photo">
+        <div class="photo-ring">
+          <!-- Replace this div with <img src="portrait.jpg" alt="Portrait of Arthur Feld" width="720" height="720"> -->
+          <div class="monogram" role="img" aria-label="Arthur Feld">AF</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap scope" aria-label="Signature graphic">
+      <figure>
+        <svg id="seismo" viewBox="0 0 1000 190" role="img" aria-label="A synthetic seismogram with the P-wave, S-wave and coda marked">
+          <line class="baseline" x1="20" y1="120" x2="980" y2="120"></line>
+          <g id="ticks"></g>
+          <path class="trace" id="trace" pathLength="1" d=""></path>
+          <g class="phase">
+            <line class="phase-drop" x1="174" y1="34" x2="174" y2="120"></line>
+            <circle class="phase-dot" cx="174" cy="120" r="4.5"></circle>
+            <text class="phase-label" x="174" y="24">P-wave</text>
+          </g>
+          <g class="phase">
+            <line class="phase-drop" x1="366" y1="34" x2="366" y2="120"></line>
+            <circle class="phase-dot is-s" cx="366" cy="120" r="4.5"></circle>
+            <text class="phase-label" x="366" y="24">S-wave</text>
+          </g>
+          <g class="phase">
+            <line class="phase-drop" x1="700" y1="34" x2="700" y2="120"></line>
+            <circle class="phase-dot" cx="700" cy="120" r="4.5"></circle>
+            <text class="phase-label" x="700" y="24">coda</text>
+          </g>
+        </svg>
+        <figcaption>Synthetic ground-motion record generated for this page, with the P-wave, S-wave and coda marked. My LMPS project trained a neural operator to predict signals like this one.</figcaption>
+      </figure>
+    </section>
+
+    <section class="wrap band rule-top" id="projects">
+      <p class="eyebrow">Projects</p>
+      <div class="projects">
+
+        <a class="project" href="#cv-hkust">
+          <div class="meta">
+            <span>2026 · HKUST research internship</span>
+            <span>Python · scikit-learn</span>
+            <span class="figure">R² ≈ 0.61</span>
+          </div>
+          <h3>Predicting how annoying aircraft noise sounds</h3>
+          <p>An ML pipeline that predicts perceived annoyance from aircraft-noise spectrograms, trained on ratings from a 55-participant listening study. A spectral-centroid baseline reaches RMSE ≈ 0.35. A Dynamic Mode Decomposition written from scratch did not beat it under leakage-free benchmarking, a negative result I documented.</p>
+        </a>
+
+        <a class="project" href="#cv-lmps">
+          <div class="meta">
+            <span>2026 · LMPS research project</span>
+            <span>Neural operators · MIFNO · HEMEWS-3D</span>
+          </div>
+          <h3>A neural surrogate for 3D earthquake shaking</h3>
+          <p>Full 3D wave simulations are too slow to run for every scenario. I trained a Multiple-Input Fourier Neural Operator on the HEMEWS-3D dataset to predict ground shaking from the subsurface geology and the earthquake source together, then tested whether it holds up on geologies it never saw in training.</p>
+        </a>
+
+        <a class="project" href="#cv-edf">
+          <div class="meta">
+            <span>2026 · EDF battery systems project</span>
+            <span>Equivalent circuit · Extended Kalman filter</span>
+          </div>
+          <h3>Real-time state of charge for an EV battery</h3>
+          <p>A vehicle mechanics model drives a second-order Thévenin model of a lithium-ion cell, with RC parameters extracted from pulse-response data. An Extended Kalman Filter then estimates the pack's state of charge in real time.</p>
+        </a>
+
+        <a class="project" href="#cv-robot">
+          <div class="meta">
+            <span>2025 · Robotics bootcamp</span>
+            <span>Python · Raspberry Pi</span>
+          </div>
+          <h3>Autonomous line-following robot</h3>
+          <p>A Raspberry Pi robot that follows a track with PID control, and combines several sensors to navigate smoothly, detect slopes and trigger its safety functions.</p>
+        </a>
+
+      </div>
+    </section>
+
+    <section class="wrap band rule-top" id="contact">
+      <p class="eyebrow">Contact</p>
+      <h2>Looking for a three-month internship, May to July 2027.</h2>
+      <ul class="contact-links">
+        <li><a href="mailto:arthur.feld@mail.mcgill.ca">arthur.feld@mail.mcgill.ca</a></li>
+        <li><a href="#cv">CV</a></li>
+      </ul>
+      <p class="contact-note">Based in Montreal. French, English and Spanish.</p>
+    </section>
+
+  </div>
+
+  <!-- ===================== CV ===================== -->
+  <div id="view-cv" class="wrap" hidden>
+
+    <section class="band band--tight project-head">
+      <p class="eyebrow">Curriculum vitae</p>
+      <h1>Third-year Data Science student, CentraleSupélec × McGill</h1>
+      <p class="lede">Bachelor of Global Engineering student majoring in Data Science, based in Montreal. Machine learning research at HKUST and at the Laboratoire de Mécanique Paris-Saclay. Looking for a three-month internship from May to July 2027.</p>
+
+      <dl class="factsheet">
+        <div><dt>Programme</dt><dd>Bachelor of Global Engineering<br>CentraleSupélec × McGill</dd></div>
+        <div><dt>Major</dt><dd>Data Science<br>Graduating July 2028</dd></div>
+        <div><dt>Available</dt><dd>May – July 2027<br>3-month internship</dd></div>
+        <div><dt>Languages</dt><dd>French, English, Spanish<br>Mandarin (beginner)</dd></div>
+      </dl>
+
+      <ul class="actions">
+        <li><a class="btn btn--primary" href="mailto:arthur.feld@mail.mcgill.ca">arthur.feld@mail.mcgill.ca</a></li>
+        <li><a class="btn" href="#projects">Projects</a></li>
+      </ul>
+    </section>
+
+    <section class="cv-section">
+      <h2>Education</h2>
+
+      <div class="cv-entry">
+        <div class="when">Sep 2024 – Jul 2028</div>
+        <div class="what">
+          <h3>CentraleSupélec × McGill <span>Saclay, France · Montreal, Canada</span></h3>
+          <p>Bachelor of Global Engineering, major in Data Science at McGill University.</p>
+          <p class="detail">Coursework: mathematics, physics, computer science, modelling, engineering disciplines. President of Sports Activities &amp; Events on the student association executive board (BDB).</p>
+        </div>
+      </div>
+
+      <div class="cv-entry">
+        <div class="when">Sep 2022 – Jul 2024</div>
+        <div class="what">
+          <h3>French International School of Hong Kong <span>Hong Kong SAR</span></h3>
+          <p>French General Baccalaureate, European Section, with high honours.</p>
+          <p class="detail">Specialisms: mathematics (advanced option), physics &amp; chemistry, economics &amp; social sciences, Chinese. French National Chemistry Olympiads; physics and mathematics club.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <h2>Research &amp; experience</h2>
+
+      <div class="cv-entry" id="cv-hkust">
+        <div class="when">Jun – Aug 2026</div>
+        <div class="what">
+          <h3>HKUST <span>Hong Kong SAR</span></h3>
+          <p class="role">Research Intern, Machine Learning · Dept. of Mechanical &amp; Aerospace Engineering</p>
+          <p>Built an ML pipeline in Python and scikit-learn that predicts the perceived annoyance of aircraft-noise spectrograms, using ratings from a 55-participant listening study. A spectral-centroid baseline reached RMSE ≈ 0.35 and R² ≈ 0.61 (5-fold cross-validation, 20 % holdout).</p>
+          <p>Implemented Dynamic Mode Decomposition from scratch (SVD-based, verified on synthetic signals). Leakage-free benchmarking showed its temporal features did not beat the spectral baseline (RMSE 0.42), and I documented this negative result.</p>
+        </div>
+      </div>
+
+      <div class="cv-entry" id="cv-lmps">
+        <div class="when">Feb – Jun 2026</div>
+        <div class="what">
+          <h3>LMPS <span>Saclay, France</span></h3>
+          <p class="role">Research project · Laboratoire de Mécanique Paris-Saclay</p>
+          <p>Worked on a fast surrogate model for realistic 3D earthquake simulation, able to show how changes in geology or fault motion affect ground shaking without running the full physics simulation.</p>
+          <p>Trained a Multiple-Input Fourier Neural Operator (MIFNO) on the HEMEWS-3D dataset, with both subsurface properties and earthquake source parameters as inputs, and tested how well it generalises to unseen geologies.</p>
+        </div>
+      </div>
+
+      <div class="cv-entry" id="cv-ocean">
+        <div class="when">Jul – Aug 2025</div>
+        <div class="what">
+          <h3>Ocean Park Conservation Foundation <span>Hong Kong SAR</span></h3>
+          <p class="role">Scientific Intern · Stranding Response &amp; Conservation Projects</p>
+          <p>Curated and structured long-term conservation datasets (2012–2025) into Excel databases, with trend visualisations of stranding hotspots and species frequencies to support evidence-driven monitoring.</p>
+          <p>Supported marine mammal stranding investigations: field recovery, morphometrics, necropsy assistance, and preparation of skeletal material for CT-based virtopsy.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <h2>Engineering projects</h2>
+
+      <div class="cv-entry" id="cv-edf">
+        <div class="when">Jan 2026</div>
+        <div class="what">
+          <h3>EDF · Battery systems project <span>Fontainebleau, France</span></h3>
+          <p class="role">Battery modelling</p>
+          <p>Modelled an electric-vehicle battery pack: designed the vehicle's mechanical model, simulated a lithium-ion cell with a second-order Thévenin equivalent circuit, extracted RC parameters from pulse-response data, and implemented an Extended Kalman Filter for real-time state-of-charge estimation.</p>
+        </div>
+      </div>
+
+      <div class="cv-entry" id="cv-robot">
+        <div class="when">Nov 2025</div>
+        <div class="what">
+          <h3>Autonomous line-following robot <span>Paris-Saclay, France</span></h3>
+          <p class="role">Python modelling · Control systems</p>
+          <p>Developed an autonomous trajectory-following robot on a Raspberry Pi, with PID control and multi-sensor perception for smooth navigation, slope detection and safety functions.</p>
+        </div>
+      </div>
+
+      <div class="cv-entry" id="cv-onepoint">
+        <div class="when">Nov 2024</div>
+        <div class="what">
+          <h3>OnePoint · Coding bootcamp <span>Nantes, France</span></h3>
+          <p>Built a customised virus-spreading simulation in Python with object-oriented programming and Tkinter, using GitHub for version control, and presented it to company representatives.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <h2>Volunteering</h2>
+      <div class="cv-entry">
+        <div class="when">Sep 2023 – Jun 2024</div>
+        <div class="what">
+          <h3>Mayaa <span>Hong Kong SAR · Nepal</span></h3>
+          <p class="role">Humanitarian volunteer</p>
+          <p>Volunteered with the Mayaa Association, which supports education for underprivileged young people in Hong Kong and Nepal.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <h2>Skills</h2>
+      <div class="cv-entry">
+        <div class="when">Programming</div>
+        <div class="what"><p>Python (scikit-learn), MATLAB, Java, SQL.</p></div>
+      </div>
+      <div class="cv-entry">
+        <div class="when">Methods</div>
+        <div class="what"><p>Machine learning (regression, cross-validation, leakage-free evaluation), Dynamic Mode Decomposition and SVD, neural operators, equivalent-circuit modelling, Kalman filtering, PID control.</p></div>
+      </div>
+      <div class="cv-entry">
+        <div class="when">Tools</div>
+        <div class="what"><p>Simulink, PSpice, Git and GitHub, Raspberry Pi, Microsoft Excel.</p></div>
+      </div>
+      <div class="cv-entry">
+        <div class="when">Spoken</div>
+        <div class="what"><p>French, native. English, fluent. Spanish, fluent. Mandarin, beginner.</p></div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <h2>Interests</h2>
+      <div class="cv-entry">
+        <div class="when"></div>
+        <div class="what"><p>Soccer, aeronautics, cooking, Brazilian jiu-jitsu (blue belt).</p></div>
+      </div>
+    </section>
+
+    <p class="next"><a href="#projects">← Back to projects</a></p>
+  </div>
+
+</main>
+
+<footer class="wrap">Arthur Feld · Montreal · Updated November 2026</footer>
+
+<script>
+(function () {
+  /* ---- synthetic seismogram: quiet noise, P arrival, larger S arrival, decaying coda ---- */
+  var X0 = 20, X1 = 980, Y0 = 120, AMP = 82, N = 900;
+  var tp = 0.16, ts = 0.36;
+  function noise(t) {
+    return (Math.sin(2 * Math.PI * 97 * t) + Math.sin(2 * Math.PI * 131 * t + 0.7) + Math.sin(2 * Math.PI * 173 * t + 2.1)) / 3;
+  }
+  var raw = [], peak = 0;
+  for (var i = 0; i <= N; i++) {
+    var t = i / N, v = 0.025 * noise(t);
+    if (t > tp) {
+      var dp = t - tp;
+      v += 0.28 * (1 - Math.exp(-dp * 140)) * Math.exp(-dp * 14) *
+           (Math.sin(2 * Math.PI * 58 * dp) * 0.7 + Math.sin(2 * Math.PI * 83 * dp + 0.9) * 0.3);
+    }
+    if (t > ts) {
+      var ds = t - ts;
+      v += 1.0 * (1 - Math.exp(-ds * 70)) * Math.exp(-ds * 5.2) *
+           (Math.sin(2 * Math.PI * 24 * ds) * 0.6 + Math.sin(2 * Math.PI * 37 * ds + 1.3) * 0.3 + noise(t * 0.61) * 0.1);
+    }
+    raw.push(v);
+    peak = Math.max(peak, Math.abs(v));
+  }
+  var d = "";
+  for (var j = 0; j < raw.length; j++) {
+    var x = X0 + (j / N) * (X1 - X0);
+    var y = Y0 - (raw[j] / peak) * AMP * 0.85;
+    d += (j ? "L" : "M") + x.toFixed(1) + " " + Math.min(186, y).toFixed(1);
+  }
+  document.getElementById("trace").setAttribute("d", d);
+
+  /* ---- view routing on #cv / #cv-* ---- */
+  var home = document.getElementById("view-home");
+  var cv = document.getElementById("view-cv");
+  var navLinks = document.querySelectorAll("[data-nav]");
+  function route() {
+    var h = (location.hash || "").slice(1);
+    var isCv = h === "cv" || h.indexOf("cv-") === 0;
+    home.hidden = isCv;
+    cv.hidden = !isCv;
+    navLinks.forEach(function (a) {
+      if (a.dataset.nav === "cv" && isCv) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+    requestAnimationFrame(function () {
+      var target = h && h !== "cv" && h !== "home" ? document.getElementById(h) : null;
+      if (target) target.scrollIntoView({ block: "start" });
+      else window.scrollTo(0, 0);
+    });
+  }
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+
+</body>
+</html>
